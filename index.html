@@ -6452,6 +6452,52 @@
 		integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ=="
 		data-cf-beacon='{"version":"2024.11.0","token":"5644578f3eb145d7b3bdc41fffbe5c1a","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
 		crossorigin="anonymous"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			function getGuestName() {
+				// Try query param ?to=
+				const urlParams = new URLSearchParams(window.location.search);
+				let to = urlParams.get('to');
+				
+				// Try hash param #to=
+				if (!to && window.location.hash) {
+					const hash = window.location.hash.substring(1);
+					const hashParams = new URLSearchParams(hash);
+					to = hashParams.get('to');
+				}
+				
+				// Try hash param if it's formatted as #to=Syafiq... without search format
+				if (!to && window.location.hash.startsWith('#to=')) {
+					to = decodeURIComponent(window.location.hash.substring(4));
+				}
+				
+				return to;
+			}
+
+			const guestName = getGuestName();
+			if (guestName) {
+				// 1. Update cover guest name
+				const coverGuestEl = document.querySelector('.elementor-element-419bc50 .elementor-heading-title');
+				if (coverGuestEl) {
+					coverGuestEl.textContent = guestName;
+				}
+
+				// 2. Fallback search for any element containing "Tamu Undangan"
+				const allElements = document.querySelectorAll('.elementor-heading-title, p, h2, h3, span');
+				allElements.forEach(el => {
+					if (el.textContent.trim() === 'Tamu Undangan') {
+						el.textContent = guestName;
+					}
+				});
+
+				// 3. Auto-fill RSVP input field if exists
+				const rsvpInputs = document.querySelectorAll('input[placeholder*="Nama"], input[name*="nama"], input[name*="name"], #name');
+				rsvpInputs.forEach(input => {
+					input.value = guestName;
+				});
+			}
+		});
+	</script>
 </body>
 
 </html>
